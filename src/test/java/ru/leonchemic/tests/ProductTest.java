@@ -31,6 +31,7 @@ public class ProductTest {
     static void beforeAll() {
         client = RetrofitUtils.getRetrofit();
         productService = client.create(ProductService.class);
+        productsMapper = DbUtils.getProductsMapper();
     }
 
     @BeforeEach
