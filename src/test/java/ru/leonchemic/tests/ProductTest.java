@@ -15,14 +15,17 @@ import java.io.IOException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import com.github.javafaker.Faker;
+import ru.leonchemic.utils.DbUtils;
+import ru.leonchemic.db.dao.ProductsMapper;
 
-public class ProductTests {
+
+public class ProductTest {
     static Retrofit client;
     static ProductService productService;
-    Faker faker = new Faker();
-    static Product product;
+    static Faker faker = new Faker();
+    Product product;
     static Integer productID;
-
+    static ProductsMapper productsMapper;
 
     @BeforeAll
     static void beforeAll() {
@@ -37,7 +40,12 @@ public class ProductTests {
                 .withPrice((int) ((Math.random() + 1) * 100))
                 .withCategoryTitle(CategoryType.FOOD.getTitle());
 
+        Integer countProductsBefore = DbUtils.countProducts(productsMapper);
         Response<Product> response = productService.createProduct(product).execute();
+        Integer countProductsAfter = DbUtils.countProducts(productsMapper);
+        assertThat(countProductsAfter, equalTo(countProductsBefore+1));
+
+
         assertThat(response.body().getTitle(), equalTo(product.getTitle()));
         assertThat(response.body().getPrice(), equalTo(product.getPrice()));
         assertThat(response.body().getCategoryTitle(), equalTo(product.getCategoryTitle()));
